@@ -1,28 +1,35 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import io from 'socket.io-client'
 
 
 export const useSocket = (serverPath) => {
 
-  const socket = useMemo(() => {
+  const [socket, setSocket] = useState(null)
+  const [online, setOnline] = useState(false);
 
-    return io.connect(serverPath, {
-      transports: ['websocket']
+  const conectarSocket = useCallback(() => {
+    const socketTemp = io.connect(serverPath, { 
+      transports: ['websocket'],
+      autoConnect: true,
+      forceNew: true, 
     });
 
-  }, [serverPath])
+    setSocket( socketTemp );
 
+  },[serverPath])
 
-  const [online, setOnline] = useState(false);
+  const desconectarSocket = useCallback(() => {
+    socket?.disconnect();
+  },[socket])
 
 
   useEffect(() => {
-    setOnline(socket.connected)
+    setOnline(socket?.connected)
   }, [socket])
 
 
   useEffect(() => {
-    socket.on('connect', () => {
+    socket?.on('connect', () => {
       setOnline(true)
     })
 
@@ -30,7 +37,7 @@ export const useSocket = (serverPath) => {
 
 
   useEffect(() => {
-    socket.on('disconnect', () => {
+    socket?.on('disconnect', () => {
       setOnline(false)
     })
   }, [socket])
@@ -39,5 +46,7 @@ export const useSocket = (serverPath) => {
   return {
     socket,
     online,
+    conectarSocket,
+    desconectarSocket,
   }
 }
