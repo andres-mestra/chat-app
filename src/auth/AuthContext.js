@@ -67,11 +67,8 @@ export const AuthProvider = ({ children }) => {
     //Si token no existe
     if (!token) {
       setAuth({
-        uid: null,
         checking: false,
         logged: false,
-        name: null,
-        email: null,
       })
 
       return false;
@@ -92,11 +89,8 @@ export const AuthProvider = ({ children }) => {
       return true;
     } else {
       setAuth({
-        uid: null,
         checking: false,
         logged: false,
-        name: null,
-        email: null,
       })
 
       return false;
@@ -105,7 +99,11 @@ export const AuthProvider = ({ children }) => {
   }, [])
 
 const logout = () => {
-
+  localStorage.removeItem('token');
+  setAuth({
+    checking: false,
+    logged: false,
+  })
 }
 
 
