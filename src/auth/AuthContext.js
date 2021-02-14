@@ -1,5 +1,5 @@
 import { createContext, useCallback, useState } from "react";
-import { fetchSinToken } from "../helpers/fetch";
+import { fetchConToken, fetchSinToken } from "../helpers/fetch";
 
 
 export const AuthContext = createContext();
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (nombre, email, password) => {
     const resp = await fetchSinToken('api/login/new', { nombre, email, password }, 'POST')
 
-    if( resp.ok ){
+    if (resp.ok) {
       localStorage.setItem('token', resp.token)
       const { usuario } = resp
       setAuth({
@@ -52,33 +52,72 @@ export const AuthProvider = ({ children }) => {
       return resp.ok;
     }
 
-    if( resp.errors ){
+    if (resp.errors) {
       let msg = '';
-      Object.keys(resp.errors).forEach( key => msg += resp.errors[key].msg + ', ' )
+      Object.keys(resp.errors).forEach(key => msg += resp.errors[key].msg + ', ')
       return msg;
     }
 
     return resp?.msg;
   }
 
-  const verificaToken = useCallback(() => {
+  const verificaToken = useCallback(async () => {
+
+    const token = localStorage.getItem('token');
+    //Si token no existe
+    if (!token) {
+      setAuth({
+        uid: null,
+        checking: false,
+        logged: false,
+        name: null,
+        email: null,
+      })
+
+      return false;
+    }
+
+    const resp = await fetchConToken('api/login/renew');
+    if (resp.ok) {
+      localStorage.setItem('token', resp.token)
+      const { usuario } = resp
+      setAuth({
+        uid: usuario.uid,
+        name: usuario.nombre,
+        email: usuario.email,
+        checking: false,
+        logged: true,
+      })
+
+      return true;
+    } else {
+      setAuth({
+        uid: null,
+        checking: false,
+        logged: false,
+        name: null,
+        email: null,
+      })
+
+      return false;
+    }
 
   }, [])
 
-  const logout = () => {
+const logout = () => {
 
-  }
+}
 
 
-  return (
-    <AuthContext.Provider value={{
-      login,
-      register,
-      verificaToken,
-      logout,
-      auth,
-    }}>
-      { children}
-    </AuthContext.Provider>
-  )
+return (
+  <AuthContext.Provider value={{
+    login,
+    register,
+    verificaToken,
+    logout,
+    auth,
+  }}>
+    { children}
+  </AuthContext.Provider>
+)
 }
