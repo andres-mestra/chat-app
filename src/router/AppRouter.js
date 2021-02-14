@@ -2,12 +2,13 @@ import { useContext, useEffect } from 'react'
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
   Redirect,
 } from 'react-router-dom';
 import { AuthContext } from '../auth/AuthContext';
 import { ChatPage } from '../pages/ChatPage';
 import { AuthRouter } from './AuthRouter';
+import { PrivateRouter } from './PrivateRouter';
+import { PublicRouter } from './PublicRouter';
 
 export const AppRouter = () => {
 
@@ -15,9 +16,9 @@ export const AppRouter = () => {
 
   useEffect(() => {
     verificaToken();
-  },[verificaToken])
-  
-  if(auth.checking) {
+  }, [verificaToken])
+
+  if (auth.checking) {
     return <h1>Espere  por favor ...</h1>
   }
 
@@ -25,9 +26,17 @@ export const AppRouter = () => {
     <Router>
       <div>
         <Switch>
-          <Route path="/auth" component={ AuthRouter } />
-          <Route exact path="/" component={ ChatPage } />
-
+          <PublicRouter
+            isAuthenticated={auth.logged}
+            path="/auth"
+            component={AuthRouter}
+          />
+          <PrivateRouter
+            isAuthenticated={auth.logged}
+            exact
+            path="/"
+            component={ChatPage}
+          />
           <Redirect to="/" />
         </Switch>
       </div>
