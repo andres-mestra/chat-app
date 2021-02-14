@@ -35,8 +35,30 @@ export const AuthProvider = ({ children }) => {
 
   }
 
-  const register = (nombre, email, password) => {
+  const register = async (nombre, email, password) => {
+    const resp = await fetchSinToken('api/login/new', { nombre, email, password }, 'POST')
 
+    if( resp.ok ){
+      localStorage.setItem('token', resp.token)
+      const { usuario } = resp
+      setAuth({
+        uid: usuario.uid,
+        name: usuario.nombre,
+        email: usuario.email,
+        checking: false,
+        logged: true,
+      })
+
+      return resp.ok;
+    }
+
+    if( resp.errors ){
+      let msg = '';
+      Object.keys(resp.errors).forEach( key => msg += resp.errors[key].msg + ', ' )
+      return msg;
+    }
+
+    return resp?.msg;
   }
 
   const verificaToken = useCallback(() => {

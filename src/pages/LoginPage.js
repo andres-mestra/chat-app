@@ -53,7 +53,10 @@ export const LoginPage = () => {
       Swal.fire('Error', 'Verifique email y password', 'error')
     }
   }
-
+  
+  const todoOk = () => {
+    return ( form.email.length > 0 && form.password.length > 0 ) ? true : false;
+  }
 
   return (
     <form
@@ -114,6 +117,7 @@ export const LoginPage = () => {
         <button
           className="login100-form-btn"
           type="submit"
+          disabled={ !todoOk() }
         >
           Ingresar
 				</button>
