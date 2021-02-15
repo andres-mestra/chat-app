@@ -27,8 +27,6 @@ export const SendMessage = () => {
       para: chatState.chatActivo,
       mensaje,
     });
-
-    //TODO:Hacer el dispatch del mensaje
     
     setMensaje('')
   }
