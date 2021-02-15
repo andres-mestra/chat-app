@@ -5,4 +5,5 @@ export const types = {
   activarChat: '[Chat] Activar chat',
   nuevoMensaje: '[Chat] Nuevo mensaje',
   cargarMensajes: '[Chat] Cargar mensajes',
+  clearChat: '[Chat] Clear chat',
 }
