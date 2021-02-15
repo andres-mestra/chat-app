@@ -5,6 +5,7 @@ import { useSocket } from '../hooks/useSocket'
 import { ChatContext } from './chat/ChatContext';
 
 import { types } from '../types/types';
+import { scrollToBottonAnimated } from '../helpers/scrollToBotton';
 
 export const SocketContext = createContext();
 
@@ -46,6 +47,8 @@ export const SocketProvider = ({ children }) => {
         })
 
         //Mover el scroll al final
+        scrollToBottonAnimated('mensajes')
+
       })
     },[socket, dispatch])
     
